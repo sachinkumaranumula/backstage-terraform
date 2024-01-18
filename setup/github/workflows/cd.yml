@@ -1,0 +1,64 @@
+name: CD
+on:
+  push:
+    branches:
+      - release/*
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+
+jobs:
+  build:
+    name: Containerize & Push Backstage
+    runs-on: ubuntu-latest
+    steps:
+      - name: ☁️ Checkout
+        uses: actions/checkout@v3
+
+      - name: 🔧 Set Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: 📦 Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: 🔧 TSC
+        run: yarn tsc
+
+      - name: 🔧 Build Backend
+        run: yarn build:backend --config ../../app-config.yaml
+
+      - name: ☁️ Container Registry Login
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: 🚀 Build and push Docker images
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: packages/backend/Dockerfile
+          push: true
+          tags: ${{ secrets.REGISTRY_LOGIN_SERVER }}/org/backstagedemo:${{ github.sha }}
+
+      - name: ☁️ 'Azure Login'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: 🚀 Deploy to Azure Linux App Service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: '${{ secrets.BACKSTAGE_APP_NAME }}'
+          images: ${{ secrets.REGISTRY_LOGIN_SERVER }}/org/backstagedemo:${{ github.sha }}

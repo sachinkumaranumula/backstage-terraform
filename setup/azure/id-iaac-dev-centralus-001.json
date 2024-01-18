@@ -1,0 +1,28 @@
+{
+    "id": "/subscriptions/452774ac-0850-4d82-bf33-ac84408ca154/providers/Microsoft.Authorization/roleDefinitions/e5064d4e-6d42-490e-8790-3552423be6f6",
+    "properties": {
+        "roleName": "IaaC-Runner",
+        "description": "Permissions for Identities that perform resource actions at Subscription scope",
+        "assignableScopes": [
+            "/subscriptions/452774ac-0850-4d82-bf33-ac84408ca154"
+        ],
+        "permissions": [
+            {
+                "actions": [
+                    "*",
+                    "Microsoft.Authorization/roleAssignments/*"
+                ],
+                "notActions": [
+                    "Microsoft.Authorization/elevateAccess/Action",
+                    "Microsoft.Blueprint/blueprintAssignments/write",
+                    "Microsoft.Blueprint/blueprintAssignments/delete",
+                    "Microsoft.Compute/galleries/share/action",
+                    "Microsoft.Purview/consents/write",
+                    "Microsoft.Purview/consents/delete"
+                ],
+                "dataActions": [],
+                "notDataActions": []
+            }
+        ]
+    }
+}

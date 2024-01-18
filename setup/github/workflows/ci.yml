@@ -1,0 +1,30 @@
+name: CI
+on:
+  push
+
+jobs:
+  build:
+    name: Test & Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: ☁️ Checkout
+        uses: actions/checkout@v3
+
+      - name: 🔧 Set Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: 📦 Install dependencies
+        run: yarn install --frozen-lockfile
+        
+      - name: 🔍 Lint
+        run: yarn lint:all
+
+      - name: 🔍 Test
+        run: yarn test:all
+      
+      - name: 📦 Build
+        run: yarn build:all
+  

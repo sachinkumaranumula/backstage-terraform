@@ -1,0 +1,23 @@
+name: Check AZ CLI
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+
+jobs:
+  build:
+    name: Azure Login Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: ☁️ 'Azure Login'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
